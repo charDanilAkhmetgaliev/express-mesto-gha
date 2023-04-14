@@ -21,3 +21,11 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: err }));
 };
+
+module.exports.updateData = (req, res) => {
+  const { name, about, avatar } = req.body;
+
+  User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: err }));
+};
