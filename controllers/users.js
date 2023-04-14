@@ -17,7 +17,7 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => handlerErrors(err, res));
 };
 
@@ -25,6 +25,6 @@ module.exports.updateData = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => handlerErrors(err, res));
 };
