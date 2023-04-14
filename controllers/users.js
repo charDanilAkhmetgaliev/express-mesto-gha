@@ -1,17 +1,16 @@
 const User = require('../models/user');
-
-const err = 'Произошла ошибка на стороне сервера';
+const { handlerErrors } = require('../utils/errors');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: err }));
+    .catch((err) => handlerErrors(err, res));
 };
 
 module.exports.getUsersById = (req, res) => {
   User.findById(req.params.id)
     .then((user) => res.send(user))
-    .catch(() => res.status(500).send({ message: err }));
+    .catch((err) => handlerErrors(err, res));
 };
 
 module.exports.createUser = (req, res) => {
@@ -19,7 +18,7 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: err }));
+    .catch((err) => handlerErrors(err, res));
 };
 
 module.exports.updateData = (req, res) => {
@@ -27,5 +26,5 @@ module.exports.updateData = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: err }));
+    .catch((err) => handlerErrors(err, res));
 };
