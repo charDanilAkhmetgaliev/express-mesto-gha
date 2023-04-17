@@ -5,21 +5,21 @@ const bodyParser = require('body-parser');
 const app = express();
 const { PORT = 3000 } = process.env;
 
+mongoose.connect('mongodb://localhost:27017/mestodb');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
-
 // todo: удалить временную авторизацию
-const tempAuth = (req, res, next) => {
+const logger = (req, res, next) => {
   req.user = {
-    _id: '64381393100c956e41b7ffb',
+    _id: '64381393100c956e41b7ffb4',
   };
 
   next();
 };
 
-app.use(tempAuth);
+app.use(logger);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
