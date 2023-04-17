@@ -24,6 +24,11 @@ module.exports.createUser = (req, res) => {
 module.exports.updateData = (req, res) => {
   const { name, about, avatar } = req.body;
 
+  if (!name && !about && !avatar) {
+    res.status(400).send({ message: 'Переданы некорректные данные' });
+    return;
+  }
+
   User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
     .then((user) => res.send(user))
     .catch((err) => handlerErrors(err, res));
