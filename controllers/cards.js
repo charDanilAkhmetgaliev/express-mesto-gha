@@ -3,7 +3,7 @@ const { handlerErrors } = require('../utils/errors');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then(cards => res.send(cards))
+    .then((cards) => res.send(cards))
     .catch((err) => handlerErrors(err, res));
 };
 
@@ -23,7 +23,7 @@ module.exports.deleteCard = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
-  console.log(req.user._id)
+  console.log(req.user._id);
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => res.send(card))
     .catch((err) => handlerErrors(err, res));
