@@ -9,8 +9,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
+
 // todo: удалить временную авторизацию
-module.exports.tempAuth = (req, res, next) => {
+const tempAuth = (req, res, next) => {
   req.user = {
     _id: '64381393100c956e41b7ffb',
   };
@@ -18,6 +19,7 @@ module.exports.tempAuth = (req, res, next) => {
   next();
 };
 
+app.use(tempAuth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
