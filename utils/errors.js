@@ -1,16 +1,8 @@
-const DEF_CODE = 500;
-const DATA_CODE = 400;
-const OBJECT_CODE = 404;
-
-const DEF_MESSAGE = 'Произошла ошибка сервера';
-const DATA_MESSAGE = 'Переданы некорректные данные';
-const OBJECT_MESSAGE = 'Запрашиваемый объект не найден';
-
 class httpError extends Error {
   constructor(message) {
     super();
     this.name = 'DEF_ERROR';
-    this.statusCode = DEF_CODE;
+    this.statusCode = 500;
     this.message = `Произошла ошибка сервера, с сообщением: ${message}`;
   }
 }
@@ -19,7 +11,7 @@ class ObjectNotFoundError extends httpError {
   constructor(message) {
     super();
     this.name = 'OBJECT_ERROR';
-    this.statusCode = OBJECT_CODE;
+    this.statusCode = 404;
     this.message = `Запрашиваемый объект не найден, сообщение: ${message}`;
   }
 }
@@ -28,29 +20,28 @@ class DataIncorrectError extends httpError {
   constructor(message) {
     super();
     this.name = 'DATA_ERROR';
-    this.statusCode = DATA_CODE;
+    this.statusCode = 400;
     this.message = `Переданы некорректные данные, сообщение: ${message}`;
   }
 }
 
-class IdNotFoundError extends ObjectNotFoundError {
-  constructor(id) {
-    super();
-    this.message = `Пользователь с id: ${id} не найден`;
-  }
-}
+const handlerSendError = (res, err) => {
+  res.status(err.statusCode).send({ ERROR: err.name, message: err.message });
+};
 
-class FieldIncorrectSizeError extends DataIncorrectError {
-  constructor() {
-    super();
-    this.message = 'имя или описание меньше 2 или больше 30 символов';
+const handlerError = (err, res) => {
+  if (!err.statusCode) {
+    const dataError = new DataIncorrectError(err.message);
+    handlerSendError(res, dataError);
+    return;
   }
-}
+  handlerSendError(res, err);
+};
 
 module.exports = {
   httpError,
   ObjectNotFoundError,
   DataIncorrectError,
-  IdNotFoundError,
-  FieldIncorrectSizeError,
+  handlerError,
+  handlerSendError,
 };
