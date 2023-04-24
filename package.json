@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "npx eslint --fix .",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "amend": "git add . && git commit --amend && git pull && git push -u origin develop"
   },
   "repository": {
     "type": "git",

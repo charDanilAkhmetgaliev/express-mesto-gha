@@ -3,31 +3,33 @@ const {
   httpError, ObjectNotFoundError, DataIncorrectError, IdNotFoundError,
 } = require('../utils/errors');
 
-const handlerSendError = (err, res) => {};
-const handlerSendError = (err, res) => {
+const handlerSendError = (res, statusCode, name, message) => {
+  res.status(statusCode).send({ ERROR: name, message });
+};
+const handlerError = (err, res) => {
   if (err.statusCode) {
     const { name, statusCode, message } = err;
-    res.status(statusCode).send({ ERROR: name, message: message });
+    handlerSendError(res, statusCode, name, message);
   } else {
     const { name, statusCode, message } = new DataIncorrectError(err.message);
-    res.status(statusCode).send({ ERROR: name, message: message });
+    handlerSendError(res, statusCode, name, message);
   }
-}
+};
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => handlerSendError(err, res));
+    .catch((err) => handlerError(err, res));
 };
 
 module.exports.getUsersById = (req, res) => {
   const userId = req.params.id;
   User.findById(userId)
     .orFail(() => {
-      throw new IdNotFoundError(userId)
+      throw new IdNotFoundError(userId);
     })
     .then((user) => res.send(user))
-    .catch(err => handlerSendError(err, res));
+    .catch((err) => handlerError(err, res));
 };
 
 module.exports.createUser = (req, res) => {
@@ -35,7 +37,7 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send(user))
-    .catch((err) => handlerSendError(err, res));
+    .catch((err) => handlerError(err, res));
 };
 
 module.exports.updateData = (req, res) => {
@@ -48,5 +50,5 @@ module.exports.updateData = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
     .then((user) => res.send(user))
-    .catch((err) => handlerSendError(err, res));
+    .catch((err) => handlerError(err, res));
 };
