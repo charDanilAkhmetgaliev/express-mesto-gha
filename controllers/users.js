@@ -4,7 +4,7 @@ const {
 } = require('../utils/errors');
 
 const handlerSendError = (res, err) => {
-  res.status(err.statusCode).send({ ERROR: err.name, MESSAGE: err.message });
+  res.status(err.statusCode).send({ ERROR: err.name, message: err.message });
 };
 
 const handlerError = (err, res) => {
