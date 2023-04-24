@@ -49,7 +49,7 @@ module.exports.updateData = (req, res) => {
 
     const averageSumLengths = (nameLength + aboutLength) / 2;
 
-    if (averageSumLengths < 15 && averageSumLengths > 2) {
+    if (averageSumLengths <= 15 && averageSumLengths >= 2) {
       User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
         .then((user) => res.send(user))
         .catch((err) => handlerError(err, res));
