@@ -52,5 +52,5 @@ module.exports = {
   ObjectNotFoundError,
   DataIncorrectError,
   IdNotFoundError,
-  FieldIncorrectSizeError
+  FieldIncorrectSizeError,
 };
