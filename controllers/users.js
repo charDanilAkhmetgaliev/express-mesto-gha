@@ -3,17 +3,17 @@ const {
   httpError, ObjectNotFoundError, DataIncorrectError, IdNotFoundError,
 } = require('../utils/errors');
 
-const handlerSendError = (res, statusCode, name, message) => {
-  res.status(statusCode).send({ ERROR: name, message });
+const handlerSendError = (res, err) => {
+  res.status(err.statusCode).send({ ERROR: err.name, MESSAGE: err.message });
 };
+
 const handlerError = (err, res) => {
-  if (err.statusCode) {
-    const { name, statusCode, message } = err;
-    handlerSendError(res, statusCode, name, message);
-  } else {
-    const { name, statusCode, message } = new DataIncorrectError(err.message);
-    handlerSendError(res, statusCode, name, message);
+  if (!err.statusCode) {
+    const dataError = new DataIncorrectError(err.message);
+    handlerSendError(res, dataError);
+    return;
   }
+  handlerSendError(res, err);
 };
 
 module.exports.getUsers = (req, res) => {
@@ -43,12 +43,22 @@ module.exports.createUser = (req, res) => {
 module.exports.updateData = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  if (!name && !about && !avatar) {
-    res.status(400).send({ message: 'Переданы некорректные данные' });
+  if (name || about || avatar) {
+    const nameLength = name?.length || 0;
+    const aboutLength = about?.length || 0;
+
+    const averageSumLengths = (nameLength + aboutLength) / 2;
+
+    if (averageSumLengths < 15 && averageSumLengths > 2) {
+      User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
+        .then((user) => res.send(user))
+        .catch((err) => handlerError(err, res));
+      return;
+    }
+    const err = new DataIncorrectError('имя или описание меньше 2 или больше 30 символов');
+    handlerSendError(res, err);
     return;
   }
-
-  User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
-    .then((user) => res.send(user))
-    .catch((err) => handlerError(err, res));
+  const err = new DataIncorrectError('данные не заполнены');
+  handlerSendError(res, err);
 };

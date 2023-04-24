@@ -40,6 +40,13 @@ class IdNotFoundError extends ObjectNotFoundError {
   }
 }
 
+class FieldIncorrectSizeError extends DataIncorrectError {
+  constructor() {
+    super();
+    this.message = 'Имя или описание меньше 2 или больше 30 символов';
+  }
+}
+
 module.exports = {
   httpError,
   ObjectNotFoundError,
