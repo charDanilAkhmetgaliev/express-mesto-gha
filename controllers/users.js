@@ -1,16 +1,33 @@
 const User = require('../models/user');
-const { handlerErrors } = require('../utils/errors');
+const {
+  httpError, ObjectNotFoundError, DataIncorrectError, IdNotFoundError,
+} = require('../utils/errors');
+
+const handlerErrors = (err, res) => {};
+const handlerSendError = (err, res) => {
+  if (err.statusCode) {
+    const { name, statusCode, message } = err;
+    res.status(statusCode).send({ ERROR: name, message: message });
+  } else {
+    const { name, statusCode, message } = new DataIncorrectError(err.message);
+    res.status(statusCode).send({ ERROR: name, message: message });
+  }
+}
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => handlerErrors(err, res));
+    .catch((err) => handlerSendError(err, res));
 };
 
 module.exports.getUsersById = (req, res) => {
-  User.findById(req.params.id)
+  const userId = req.params.id;
+  User.findById(userId)
+    .orFail(() => {
+      throw new IdNotFoundError(userId)
+    })
     .then((user) => res.send(user))
-    .catch((err) => handlerErrors(err, res));
+    .catch(err => handlerSendError(err, res));
 };
 
 module.exports.createUser = (req, res) => {

@@ -6,21 +6,43 @@ const DEF_MESSAGE = 'Произошла ошибка сервера';
 const DATA_MESSAGE = 'Переданы некорректные данные';
 const OBJECT_MESSAGE = 'Запрашиваемый объект не найден';
 
-const handlerErrors = (err, res) => {
-  const errorName = err.name;
-
-  switch (errorName) {
-    case 'CastError':
-      res.status(OBJECT_CODE).send({ message: OBJECT_MESSAGE });
-      break;
-    case 'ValidationError':
-      res.status(DATA_CODE).send({ message: DATA_MESSAGE });
-      break;
-    default:
-      res.status(DEF_CODE).send({ message: DEF_MESSAGE });
+class httpError extends Error {
+  constructor(message) {
+    super();
+    this.name = 'DEF_ERROR';
+    this.statusCode = DEF_CODE;
+    this.message = `Произошла ошибка сервера, с сообщением: ${message}`;
   }
-};
+}
+
+class ObjectNotFoundError extends httpError {
+  constructor(message) {
+    super();
+    this.name = 'OBJECT_ERROR';
+    this.statusCode = OBJECT_CODE;
+    this.message = `Запрашиваемый объект не найден, сообщение: ${message}`;
+  }
+}
+
+class DataIncorrectError extends httpError {
+  constructor(message) {
+    super();
+    this.name = 'DATA_ERROR';
+    this.statusCode = DATA_CODE;
+    this.message = `Переданы некорректные данные, сообщение: ${message}`;
+  }
+}
+
+class IdNotFoundError extends ObjectNotFoundError {
+  constructor(id) {
+    super();
+    this.message = `Пользователь с id: ${id} не найден`;
+  }
+}
 
 module.exports = {
-  handlerErrors,
+  httpError,
+  ObjectNotFoundError,
+  DataIncorrectError,
+  IdNotFoundError,
 };
