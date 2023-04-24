@@ -41,16 +41,14 @@ module.exports.createUser = (req, res) => {
 };
 
 module.exports.updateData = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const { name, about } = req.body;
 
-  if (name || about || avatar) {
+  if (name || about) {
     const nameLength = name?.length || 0;
     const aboutLength = about?.length || 0;
 
-    const averageSumLengths = (nameLength + aboutLength) / 2;
-
-    if (averageSumLengths <= 15 && averageSumLengths >= 2) {
-      User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { new: true })
+    if ((nameLength >= 2 && nameLength <= 30) || (aboutLength >= 2 && aboutLength <= 30)) {
+      User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
         .then((user) => res.send(user))
         .catch((err) => handlerError(err, res));
       return;
@@ -62,3 +60,16 @@ module.exports.updateData = (req, res) => {
   const err = new DataIncorrectError('данные не заполнены');
   handlerSendError(res, err);
 };
+
+module.exports.updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+
+  if (avatar) {
+   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true})
+    .then((user) => res.send(user))
+    .catch(err => handlerError(err, res))
+   return;
+  }
+  const err = new DataIncorrectError('данные не заполнены');
+  handlerSendError(res, err);
+}
