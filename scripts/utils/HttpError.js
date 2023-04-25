@@ -1,9 +1,9 @@
 class HttpError extends Error {
-  constructor(message) {
+  constructor() {
     super();
     this.name = 'DEF_ERROR';
     this.statusCode = 500;
-    this.message = `Произошла ошибка сервера, с сообщением: ${message}`;
+    this.message = 'Произошла неизвестная ошибка';
   }
 }
 

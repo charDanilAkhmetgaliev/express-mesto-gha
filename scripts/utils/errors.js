@@ -1,4 +1,6 @@
-const DataIncorrectError = require('./DataIncorrectError');
+const CastError = require('./CastError');
+const ValidationError = require('./ValidationError');
+const HttpError = require('./HttpError');
 
 const handlerSendError = (res, err) => {
   res.status(err.statusCode).send({ ERROR: err.name, message: err.message });
@@ -7,13 +9,13 @@ const handlerSendError = (res, err) => {
 const handlerError = (err, res) => {
   switch (err.name) {
     case 'ValidationError':
-      handlerSendError(res, new DataIncorrectError(err.message));
+      handlerSendError(res, new ValidationError());
       break;
     case 'CastError':
-      handlerSendError(res, new DataIncorrectError(err.message));
+      handlerSendError(res, new CastError());
       break;
     default:
-      handlerSendError(res, err);
+      handlerSendError(res, new HttpError());
   }
 };
 
