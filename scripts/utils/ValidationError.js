@@ -1,6 +1,6 @@
-const DataIncorrectError = require('./DataIncorrectError');
+const ObjectNotFoundError = require('./ObjectNotFoundError');
 
-class ValidationError extends DataIncorrectError {
+class ValidationError extends ObjectNotFoundError {
   constructor() {
     super();
     this.name = 'VALIDATION_ERROR';

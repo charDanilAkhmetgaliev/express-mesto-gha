@@ -1,6 +1,6 @@
-const ObjectNotFoundError = require('./ObjectNotFoundError');
+const DataIncorrectError = require('./DataIncorrectError');
 
-class CastError extends ObjectNotFoundError {
+class CastError extends DataIncorrectError {
   constructor() {
     super();
     this.name = 'CAST_ERROR';
