@@ -1,7 +1,6 @@
 const Card = require('../models/card');
-const {
-  handlerError, handlerSendError, DataIncorrectError, ObjectNotFoundError,
-} = require('../utils/errors');
+const { handlerError } = require('../scripts/utils/errors');
+const ObjectNotFoundError = require('../scripts/utils/ObjectNotFoundError');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -13,13 +12,9 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
-  if (name && link && owner) {
-    Card.create({ name, link, owner })
-      .then((card) => res.send(card))
-      .catch((err) => handlerError(err, res));
-  } else {
-    handlerSendError(res, new DataIncorrectError('данные не заполнены'));
-  }
+  Card.create({ name, link, owner })
+    .then((card) => res.send(card))
+    .catch((err) => handlerError(err, res));
 };
 
 module.exports.deleteCard = (req, res) => {

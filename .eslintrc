@@ -12,13 +12,8 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "react"
-  ],
   "rules": {
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
-    "no-unused-vars": ["off"],
-    "no-console": ["off"],
-    "max-classes-per-file": ["error", 15]
+    "no-console": ["off"]
   }
 }

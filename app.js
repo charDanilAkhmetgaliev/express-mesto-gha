@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { ObjectNotFoundError, handlerSendError } = require('./utils/errors');
+const { handlerSendError } = require('./scripts/utils/errors');
+const ObjectNotFoundError = require('./scripts/utils/ObjectNotFoundError');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -24,7 +25,7 @@ app.use(logger);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('/', (req, res, next) => {
+app.use((req, res) => {
   handlerSendError(res, new ObjectNotFoundError('Страница не найдена'));
 });
 
