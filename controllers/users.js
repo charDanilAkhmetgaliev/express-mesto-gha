@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const {
-  ObjectNotFoundError, DataIncorrectError, handlerSendError, handlerError
+  ObjectNotFoundError, DataIncorrectError, handlerSendError, handlerError,
 } = require('../utils/errors');
 
 module.exports.getUsers = (req, res) => {
@@ -40,12 +40,10 @@ module.exports.updateData = (req, res) => {
         .catch((err) => handlerError(err, res));
       return;
     }
-    const err = new DataIncorrectError('имя или описание меньше 2 или больше 30 символов');
-    handlerSendError(res, err);
+    handlerSendError(res, new DataIncorrectError('имя или описание меньше 2 или больше 30 символов'));
     return;
   }
-  const err = new DataIncorrectError('данные не заполнены');
-  handlerSendError(res, err);
+  handlerSendError(res, new DataIncorrectError('данные не заполнены'));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -57,6 +55,5 @@ module.exports.updateAvatar = (req, res) => {
       .catch((err) => handlerError(err, res));
     return;
   }
-  const err = new DataIncorrectError('данные не заполнены');
-  handlerSendError(res, err);
+  handlerSendError(res, new DataIncorrectError('данные не заполнены'));
 };
