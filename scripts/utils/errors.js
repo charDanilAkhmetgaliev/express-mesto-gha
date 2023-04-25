@@ -11,7 +11,7 @@ const handlerError = (err, res) => {
       handlerSendError(res, new DataIncorrectError(err.message));
       break;
     case 'CastError':
-      handlerSendError(res, new ObjectNotFoundError(err.message));
+      handlerSendError(res, new DataIncorrectError(err.message));
       break;
     default:
       handlerSendError(res, err);
