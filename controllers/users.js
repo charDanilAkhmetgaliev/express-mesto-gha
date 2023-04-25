@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
-const ObjectNotFoundError = require('../scripts/utils/ObjectNotFoundError');
 const DataIncorrectError = require('../scripts/utils/DataIncorrectError');
 
 module.exports.getUsers = (req, res) => {
@@ -13,7 +12,7 @@ module.exports.getUsersById = (req, res) => {
   const userId = req.params.id;
   User.findById(userId)
     .orFail(() => {
-      throw new ObjectNotFoundError(`пользователь с id ${userId} не найден`);
+      throw new DataIncorrectError(`пользователь с id ${userId} не найден`);
     })
     .then((user) => res.send(user))
     .catch((err) => handlerError(err, res));
