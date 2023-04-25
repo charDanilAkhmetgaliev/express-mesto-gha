@@ -38,12 +38,12 @@ module.exports.updateData = (req, res) => {
       User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
         .then((user) => res.send(user))
         .catch((err) => handlerError(err, res));
-      return;
+    } else {
+      handlerSendError(res, new DataIncorrectError('имя или описание меньше 2 или больше 30 символов'));
     }
-    handlerSendError(res, new DataIncorrectError('имя или описание меньше 2 или больше 30 символов'));
-    return;
+  } else {
+    handlerSendError(res, new DataIncorrectError('данные не заполнены'));
   }
-  handlerSendError(res, new DataIncorrectError('данные не заполнены'));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -53,7 +53,7 @@ module.exports.updateAvatar = (req, res) => {
     User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
       .then((user) => res.send(user))
       .catch((err) => handlerError(err, res));
-    return;
+  } else {
+    handlerSendError(res, new DataIncorrectError('данные не заполнены'));
   }
-  handlerSendError(res, new DataIncorrectError('данные не заполнены'));
 };

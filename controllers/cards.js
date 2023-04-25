@@ -17,9 +17,9 @@ module.exports.createCard = (req, res) => {
     Card.create({ name, link, owner })
       .then((card) => res.send(card))
       .catch((err) => handlerError(err, res));
-    return;
+  } else {
+    handlerSendError(res, new DataIncorrectError('данные не заполнены'));
   }
-  handlerSendError(res, new DataIncorrectError('данные не заполнены'));
 };
 
 module.exports.deleteCard = (req, res) => {
