@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
 const ObjectNotFoundError = require('../scripts/utils/ObjectNotFoundError');
+const DataIncorrectError = require('../scripts/utils/DataIncorrectError');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
