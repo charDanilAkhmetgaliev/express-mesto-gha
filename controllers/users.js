@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
-const ObjectNotFoundError = require('../scripts/utils/ObjectNotFoundError');
 const DataIncorrectError = require('../scripts/utils/DataIncorrectError');
+const IdNotFoundError = require('../scripts/utils/IdNotFoundError');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -12,9 +12,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUsersById = (req, res) => {
   const userId = req.params.id;
   User.findById(userId)
-    .orFail(() => {
-      throw new ObjectNotFoundError(`пользователь с id ${userId} не найден`);
-    })
+    .orFail(() => handlerSendError(res, new IdNotFoundError(userId)))
     .then((user) => res.send(user))
     .catch((err) => handlerError(err, res));
 };
@@ -41,12 +39,7 @@ module.exports.updateData = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-
-  if (avatar) {
-    User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-      .then((user) => res.send(user))
-      .catch((err) => handlerError(err, res));
-  } else {
-    handlerSendError(res, new DataIncorrectError('данные не заполнены'));
-  }
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .then((user) => res.send(user))
+    .catch((err) => handlerError(err, res));
 };
