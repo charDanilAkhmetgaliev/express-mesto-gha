@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { handlerSendError } = require('./scripts/utils/errors');
 const ObjectNotFoundError = require('./scripts/utils/ObjectNotFoundError');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -18,6 +19,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
