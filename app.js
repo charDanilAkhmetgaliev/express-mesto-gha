@@ -3,12 +3,21 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { handlerSendError } = require('./scripts/utils/errors');
 const ObjectNotFoundError = require('./scripts/utils/ObjectNotFoundError');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const { PORT = 3000 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
