@@ -53,3 +53,15 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => handlerError(err, res));
 };
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      handlerSendError(res, err);
+    });
+};
