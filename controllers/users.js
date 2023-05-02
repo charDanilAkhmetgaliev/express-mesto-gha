@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
 const DataIncorrectError = require('../scripts/utils/DataIncorrectError');
@@ -59,7 +60,9 @@ module.exports.login = (req, res) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      res.send(user);
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1w' });
+
+      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
     })
     .catch((err) => {
       handlerSendError(res, err);

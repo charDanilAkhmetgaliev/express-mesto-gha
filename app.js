@@ -9,7 +9,7 @@ const limiter = require('./midlewares/limiter');
 const tempAuth = require('./midlewares/tempAuth');
 const PageNotFoundHandler = require('./midlewares/PageNotFound');
 const startLogger = require('./midlewares/startLogger');
-
+// const auth = require('./midlewares/auth');
 // initialize project
 const app = express();
 const { PORT = 3000 } = process.env;

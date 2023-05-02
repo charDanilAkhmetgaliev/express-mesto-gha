@@ -5,9 +5,7 @@ const AuthorizationError = require('../scripts/utils/AuthorizationError');
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    handlerSendError(res, new AuthorizationError());
-  } else {
+  if (authorization || authorization.startsWith('Bearer ')) {
     const { JWT_SECRET } = process.env;
     const token = authorization.replace('Bearer ', '');
     let payload;
@@ -21,5 +19,7 @@ module.exports = (req, res, next) => {
     req.user = payload;
 
     next();
+  } else {
+    handlerSendError(res, new AuthorizationError());
   }
 };
