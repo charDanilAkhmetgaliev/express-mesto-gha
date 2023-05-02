@@ -1,5 +1,4 @@
 // packages imports
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -13,6 +12,8 @@ const auth = require('./midlewares/auth');
 const { login, createUser } = require('./controllers/users');
 
 // initialize project
+require('dotenv').config();
+
 const app = express();
 const { PORT = 3000 } = process.env;
 

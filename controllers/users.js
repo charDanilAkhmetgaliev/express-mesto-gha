@@ -4,12 +4,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 // utils imports
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
-const { validationHandler } = require('../scripts/utils/validator');
+const { handlerValidation } = require('../scripts/utils/validator');
 // errors classes imports
 const DataIncorrectError = require('../scripts/components/errors/DataIncorrectError');
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
 const ObjectNotFoundError = require('../scripts/components/errors/ObjectNotFoundError');
-
+const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
 // get all users controller
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -25,23 +25,34 @@ module.exports.getUsersById = (req, res) => {
     .catch((err) => handlerError(err, res));
 };
 // create/register user controller
-module.exports.createUser = (req, res) => {
-  validationHandler(req, res);
+module.exports.createUser = async (req, res) => {
+  try {
+    handlerValidation(req, res);
 
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+    const {
+      name, about, avatar, email, password,
+    } = req.body;
 
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => res.send(user))
-    .catch((err) => handlerError(err, res));
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      const hash = await bcrypt.hash(password, 10);
+
+      const newUser = await User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      });
+
+      res.send(newUser);
+    } else {
+      throw new AuthorizationError('Пользователь с таким email уже существует');
+    }
+  } catch (err) {
+    handlerError(err, res);
+  }
 };
 // update user data controller
 module.exports.updateData = (req, res) => {
@@ -64,10 +75,11 @@ module.exports.updateAvatar = (req, res) => {
 };
 // login user controller
 module.exports.login = (req, res) => {
-  if (req.body) {
-    const { email, password } = req.body;
+  handlerValidation(req, res);
 
-    User.findUserByCredentials(email, password)
+  const { email, password } = req.body;
+
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1w' });
 
@@ -76,10 +88,6 @@ module.exports.login = (req, res) => {
     .catch((err) => {
       handlerSendError(res, err);
     });
-  } else {
-    handlerSendError(res, new DataIncorrectError('Body Not Found'))
-    console.log('err 3')
-  }
 };
 
 module.exports.getUserData = (req, res) => {

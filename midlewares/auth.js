@@ -12,10 +12,9 @@ module.exports = (req, res, next) => {
 
     try {
       payload = jwt.verify(token, JWT_SECRET);
-    }
-    catch (err) {
+    } catch (err) {
       handlerSendError(res, new AuthorizationError());
-      console.log('auth error 2')
+      console.log('auth error 2');
     }
 
     req.user = payload;
@@ -23,6 +22,6 @@ module.exports = (req, res, next) => {
     next();
   } else {
     handlerSendError(res, new AuthorizationError());
-    console.log('auth error 1')
+    console.log('auth error 1');
   }
 };

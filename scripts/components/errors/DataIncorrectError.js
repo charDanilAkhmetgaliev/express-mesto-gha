@@ -5,7 +5,7 @@ class DataIncorrectError extends HttpError {
     super();
     this.name = 'DATA_ERROR';
     this.statusCode = 400;
-    this.message = `message`;
+    this.message = message;
   }
 }
 
