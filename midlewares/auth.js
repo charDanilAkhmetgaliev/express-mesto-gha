@@ -5,7 +5,7 @@ const AuthorizationError = require('../scripts/utils/AuthorizationError');
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
-  if (authorization || authorization.startsWith('Bearer ')) {
+  if (authorization && authorization.startsWith('Bearer ')) {
     const { JWT_SECRET } = process.env;
     const token = authorization.replace('Bearer ', '');
     let payload;

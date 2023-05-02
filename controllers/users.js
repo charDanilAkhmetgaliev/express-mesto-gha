@@ -4,6 +4,7 @@ const User = require('../models/user');
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
 const DataIncorrectError = require('../scripts/utils/DataIncorrectError');
 const IdNotFoundError = require('../scripts/utils/IdNotFoundError');
+const ObjectNotFoundError = require('../scripts/utils/ObjectNotFoundError');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -67,4 +68,10 @@ module.exports.login = (req, res) => {
     .catch((err) => {
       handlerSendError(res, err);
     });
+};
+
+module.exports.getUserData = (req, res) => {
+  User.findById(req.user)
+    .then((user) => res.send(user))
+    .catch(() => handlerSendError(res, new ObjectNotFoundError('Пользователь не найден')));
 };
