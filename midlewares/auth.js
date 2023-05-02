@@ -14,6 +14,7 @@ module.exports = (req, res, next) => {
       payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
       handlerSendError(res, new AuthorizationError());
+      res.redirect('/signin');
     }
 
     req.user = payload;
@@ -21,5 +22,6 @@ module.exports = (req, res, next) => {
     next();
   } else {
     handlerSendError(res, new AuthorizationError());
+    res.redirect('/signin');
   }
 };

@@ -11,7 +11,7 @@ const PageNotFoundHandler = require('./midlewares/PageNotFound');
 const startLogger = require('./midlewares/startLogger');
 // controllers
 const { login, createUser } = require('./controllers/users');
-// const auth = require('./midlewares/auth');
+const auth = require('./midlewares/auth');
 // initialize project
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -29,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(tempAuth);
 app.post('/signin', login);
 app.post('/signup', createUser);
+app.use(auth);
 
 // routing
 app.use('/users', require('./routes/users'));
