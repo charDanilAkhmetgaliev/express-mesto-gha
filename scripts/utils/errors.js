@@ -1,6 +1,6 @@
-const CastError = require('./CastError');
-const ValidationError = require('./ValidationError');
-const HttpError = require('./HttpError');
+const CastError = require('../components/errors/CastError');
+const ValidationError = require('../components/errors/ValidationError');
+const HttpError = require('../components/errors/HttpError');
 
 const handlerSendError = (res, err) => {
   res.status(err.statusCode).send({ ERROR: err.name, message: err.message });

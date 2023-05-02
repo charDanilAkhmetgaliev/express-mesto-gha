@@ -1,17 +1,17 @@
-// packages
+// packages imports
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-// middlewares
+// middlewares imports
 const limiter = require('./midlewares/limiter');
-const tempAuth = require('./midlewares/tempAuth');
 const PageNotFoundHandler = require('./midlewares/PageNotFound');
 const startLogger = require('./midlewares/startLogger');
-// controllers
-const { login, createUser } = require('./controllers/users');
 const auth = require('./midlewares/auth');
+// controllers imports
+const { login, createUser } = require('./controllers/users');
+
 // initialize project
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -26,7 +26,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // authorization
-app.use(tempAuth);
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use(auth);

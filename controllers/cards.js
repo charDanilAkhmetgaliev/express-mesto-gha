@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const { handlerError, handlerSendError } = require('../scripts/utils/errors');
-const IdNotFoundError = require('../scripts/utils/IdNotFoundError');
+const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
 
 module.exports.getCards = (req, res) => {
   Card.find({})

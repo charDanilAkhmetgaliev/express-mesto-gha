@@ -1,5 +1,5 @@
 const validator = require('validator');
-const ValidationError = require('../scripts/utils/ValidationError');
+const ValidationError = require('../scripts/components/errors/ValidationError');
 const { handlerSendError } = require('../scripts/utils/errors');
 
 module.exports = (req, res, next) => {

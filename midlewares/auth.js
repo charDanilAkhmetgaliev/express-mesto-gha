@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { handlerSendError } = require('../scripts/utils/errors');
-const AuthorizationError = require('../scripts/utils/AuthorizationError');
+const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
@@ -12,9 +12,10 @@ module.exports = (req, res, next) => {
 
     try {
       payload = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
+    }
+    catch (err) {
       handlerSendError(res, new AuthorizationError());
-      res.redirect('/signin');
+      console.log('auth error 2')
     }
 
     req.user = payload;
@@ -22,6 +23,6 @@ module.exports = (req, res, next) => {
     next();
   } else {
     handlerSendError(res, new AuthorizationError());
-    res.redirect('/signin');
+    console.log('auth error 1')
   }
 };

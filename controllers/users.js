@@ -2,9 +2,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { handlerSendError, handlerError } = require('../scripts/utils/errors');
-const DataIncorrectError = require('../scripts/utils/DataIncorrectError');
-const IdNotFoundError = require('../scripts/utils/IdNotFoundError');
-const ObjectNotFoundError = require('../scripts/utils/ObjectNotFoundError');
+const DataIncorrectError = require('../scripts/components/errors/DataIncorrectError');
+const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
+const ObjectNotFoundError = require('../scripts/components/errors/ObjectNotFoundError');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -57,9 +57,10 @@ module.exports.updateAvatar = (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  const { email, password } = req.body;
+  if (req.body) {
+    const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+    User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1w' });
 
@@ -68,6 +69,10 @@ module.exports.login = (req, res) => {
     .catch((err) => {
       handlerSendError(res, err);
     });
+  } else {
+    handlerSendError(res, new DataIncorrectError('Body Not Found'))
+    console.log('err 3')
+  }
 };
 
 module.exports.getUserData = (req, res) => {
