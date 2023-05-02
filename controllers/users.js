@@ -74,20 +74,20 @@ module.exports.updateAvatar = (req, res) => {
     .catch((err) => handlerError(err, res));
 };
 // login user controller
-module.exports.login = (req, res) => {
-  handlerValidation(req, res);
+module.exports.login = async (req, res) => {
+  try {
+    handlerValidation(req, res);
 
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1w' });
+    const user = await User.findUserByCredentials(email, password);
 
-      res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
-    })
-    .catch((err) => {
-      handlerSendError(res, err);
-    });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1w' });
+
+    res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
+  } catch (err) {
+    handlerError(err, res);
+  }
 };
 
 module.exports.getUserData = (req, res) => {

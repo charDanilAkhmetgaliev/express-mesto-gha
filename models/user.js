@@ -39,10 +39,10 @@ userSchema.statics.findUserByCredentials = function findUser(email, password) {
             if (matched) {
               return user;
             }
-            return Promise.reject(new AuthorizationError());
+            throw new AuthorizationError();
           });
       }
-      return Promise.reject(new AuthorizationError());
+      throw new AuthorizationError();
     });
 };
 

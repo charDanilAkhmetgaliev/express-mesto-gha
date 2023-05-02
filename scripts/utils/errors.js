@@ -7,18 +7,19 @@ const handlerSendError = (res, err) => {
 };
 
 const handlerError = (err, res) => {
-  switch (err.name) {
-    case 'ValidationError':
-      handlerSendError(res, new ValidationError(err.message));
-      break;
-    case 'CastError':
-      handlerSendError(res, new CastError(err.message));
-      break;
-    case 'AUTH_ERROR':
-      handlerSendError(res, err);
-      break;
-    default:
-      handlerSendError(res, new HttpError(err.message));
+  if (err.statusCode) {
+    handlerSendError(res, err);
+  } else {
+    switch (err.name) {
+      case 'ValidationError':
+        handlerSendError(res, new ValidationError(err.message));
+        break;
+      case 'CastError':
+        handlerSendError(res, new CastError(err.message));
+        break;
+      default:
+        handlerSendError(res, new HttpError());
+    }
   }
 };
 
