@@ -9,6 +9,8 @@ const limiter = require('./midlewares/limiter');
 const tempAuth = require('./midlewares/tempAuth');
 const PageNotFoundHandler = require('./midlewares/PageNotFound');
 const startLogger = require('./midlewares/startLogger');
+// controllers
+const { login, createUser } = require('./controllers/users');
 // const auth = require('./midlewares/auth');
 // initialize project
 const app = express();
@@ -25,6 +27,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // authorization
 app.use(tempAuth);
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 // routing
 app.use('/users', require('./routes/users'));

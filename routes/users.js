@@ -12,10 +12,6 @@ router.patch('/me', updateData);
 
 router.patch('/me/avatar', updateAvatar);
 
-router.post('/signin', login);
-
-router.post('/signup', createUser);
-
 router.get('/users/me', getUserData);
 
 module.exports = router;
