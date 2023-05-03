@@ -1,6 +1,7 @@
 const CastError = require('../components/errors/CastError');
 const ValidationError = require('../components/errors/ValidationError');
 const HttpError = require('../components/errors/HttpError');
+const DuplicateError = require('../components/errors/DuplicateError');
 
 const handlerSendError = (res, err) => {
   res.status(err.statusCode).send({ ERROR: err.name, message: err.message });
@@ -9,6 +10,8 @@ const handlerSendError = (res, err) => {
 const handlerError = (err, res) => {
   if (err.statusCode) {
     handlerSendError(res, err);
+  } else if (err.code === 11000) {
+    handlerSendError(res, new DuplicateError());
   } else {
     switch (err.name) {
       case 'ValidationError':
@@ -25,5 +28,4 @@ const handlerError = (err, res) => {
 
 module.exports = {
   handlerError,
-  handlerSendError,
 };

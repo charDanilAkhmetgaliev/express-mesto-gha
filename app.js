@@ -9,7 +9,7 @@ const startLogger = require('./midlewares/startLogger');
 const auth = require('./midlewares/auth');
 // controllers imports
 const { login, createUser } = require('./controllers/users');
-const { handlerSendError, handlerError } = require('./scripts/utils/errors');
+const { handlerError } = require('./scripts/utils/errors');
 // errors
 const ObjectNotFoundError = require('./scripts/components/errors/ObjectNotFoundError');
 
@@ -42,9 +42,7 @@ app.use((req, res) => {
   throw new ObjectNotFoundError('Страница не найдена');
 });
 // handler errors
-app.use((err, req, res, next) => {
-  handlerError(err, res);
-});
+app.use((err, req, res, next) => handlerError(err, res));
 
 // start server on the port
 app.listen(PORT, () => startLogger(PORT));

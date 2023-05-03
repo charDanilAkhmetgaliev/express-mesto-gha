@@ -35,24 +35,19 @@ module.exports.createUser = async (req, res, next) => {
       name, about, avatar, email, password,
     } = req.body;
 
-    const user = await User.findOne({ email });
+    // todo добавить SALT ROUNDS из окружения Number(process.env.SALT_ROUNDS)
+    const hash = await bcrypt.hash(password, 10);
 
-    if (!user) {
-      // todo добавить SALT ROUNDS из окружения Number(process.env.SALT_ROUNDS)
-      const hash = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    });
 
-      const newUser = await User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      });
+    res.send(newUser);
 
-      res.send(newUser);
-    } else {
-      throw new AuthorizationError('Пользователь с таким email уже существует');
-    }
   } catch (err) {
     next(err);
   }
