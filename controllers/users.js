@@ -6,7 +6,6 @@ const User = require('../models/user');
 const { handlerValidation } = require('../scripts/utils/validator');
 // errors classes imports
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
-const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
 // todo удалить
 const JWT_SECRET = '8b25b382b1a5b75ace37f19d5d26aabe35e68e5898851f9b9078ee9ce29ce9bf';
 
@@ -21,7 +20,7 @@ module.exports.getUsersById = (req, res, next) => {
   const userId = req.params.id;
   User.findById(userId)
     .orFail(() => {
-      throw new IdNotFoundError(userId)
+      throw new IdNotFoundError(userId);
     })
     .then((user) => res.send(user))
     .catch(next);
@@ -47,7 +46,6 @@ module.exports.createUser = async (req, res, next) => {
     });
 
     res.send(newUser);
-
   } catch (err) {
     next(err);
   }

@@ -39,14 +39,12 @@ userSchema.statics.findUserByCredentials = function findUser(email, password) {
           .then((matched) => {
             if (matched) {
               return user;
-            } else {
-              throw new AuthorizationError();
             }
-          })
-      } else {
-        throw new AuthorizationError();
+            throw new AuthorizationError();
+          });
       }
-    })
+      throw new AuthorizationError();
+    });
 };
 
 module.exports = mongoose.model('user', userSchema);

@@ -5,7 +5,6 @@ class DuplicateError extends Error {
     this.statusCode = 409;
     this.message = 'Данный объект уже существует';
   }
-
 }
 
 module.exports = DuplicateError;

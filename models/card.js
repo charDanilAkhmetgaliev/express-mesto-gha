@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { handlerError } = require('../scripts/utils/errors');
 const RootsNotExist = require('../scripts/components/errors/RootsNotExist');
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
 

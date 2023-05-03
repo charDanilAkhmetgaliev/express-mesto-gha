@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { errors } = require('celebrate');
 // middlewares imports
 const limiter = require('./midlewares/limiter');
 const startLogger = require('./midlewares/startLogger');
@@ -38,9 +39,11 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 // handler wrong url
-app.use((req, res) => {
+app.use(() => {
   throw new ObjectNotFoundError('Страница не найдена');
 });
+// handler celebrate errors
+app.use(errors());
 // handler errors
 app.use((err, req, res, next) => handlerError(err, res));
 
