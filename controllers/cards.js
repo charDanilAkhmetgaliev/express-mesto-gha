@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { handlerError, handlerSendError } = require('../scripts/utils/errors');
+const { handlerError } = require('../scripts/utils/errors');
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
 
 module.exports.getCards = (req, res) => {
@@ -18,22 +18,24 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => handlerSendError(res, new IdNotFoundError(req.params.cardId)))
-    .then((card) => res.send(card))
-    .catch((err) => handlerError(err, res));
+  Card.deleteCardById(req, res)
+    .then((cardDeleted) => res.send(cardDeleted));
 };
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .orFail(() => handlerSendError(res, new IdNotFoundError(req.params.cardId)))
+    .orFail(() => {
+      throw new IdNotFoundError(req.params.cardId);
+    })
     .then((card) => res.send(card))
     .catch((err) => handlerError(err, res));
 };
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .orFail(() => handlerSendError(res, new IdNotFoundError(req.params.cardId)))
+    .orFail(() => {
+      throw new IdNotFoundError(req.params.cardId);
+    })
     .then((card) => res.send(card))
     .catch((err) => handlerError(err, res));
 };

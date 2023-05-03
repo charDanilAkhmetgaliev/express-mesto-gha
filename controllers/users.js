@@ -36,7 +36,7 @@ module.exports.createUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      const hash = await bcrypt.hash(password, 10);
+      const hash = await bcrypt.hash(password, process.env.SALT_ROUNDS.toInt());
 
       const newUser = await User.create({
         name,
