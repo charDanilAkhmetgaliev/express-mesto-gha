@@ -8,8 +8,10 @@ const { handlerValidation } = require('../scripts/utils/validator');
 // errors classes imports
 const DataIncorrectError = require('../scripts/components/errors/DataIncorrectError');
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
-const ObjectNotFoundError = require('../scripts/components/errors/ObjectNotFoundError');
 const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
+// todo удалить
+const JWT_SECRET = '8b25b382b1a5b75ace37f19d5d26aabe35e68e5898851f9b9078ee9ce29ce9bf';
+
 // get all users controller
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -36,7 +38,8 @@ module.exports.createUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      const hash = await bcrypt.hash(password, process.env.SALT_ROUNDS.toInt());
+      // todo добавить SALT из окружения Number(process.env.SALT_ROUNDS)
+      const hash = await bcrypt.hash(password, 10);
 
       const newUser = await User.create({
         name,
@@ -81,17 +84,20 @@ module.exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findUserByCredentials(email, password);
-
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1w' });
+    // todo добавить jwt-secret из окружения process.env.JWT_SECRET
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1w' });
 
     res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
   } catch (err) {
     handlerError(err, res);
   }
 };
-
+// get user data controller
 module.exports.getUserData = (req, res) => {
-  User.findById(req.user)
+  User.findById(req.user._id)
+    .orFail(() => {
+      throw new IdNotFoundError(req.user._id);
+    })
     .then((user) => res.send(user))
-    .catch(() => handlerSendError(res, new ObjectNotFoundError('Пользователь не найден')));
+    .catch((err) => handlerError(err, res));
 };

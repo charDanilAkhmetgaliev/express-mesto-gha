@@ -6,7 +6,9 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (authorization && authorization.startsWith('Bearer ')) {
-    const { JWT_SECRET } = process.env;
+    // todo взять из окружения
+    const JWT_SECRET = '8b25b382b1a5b75ace37f19d5d26aabe35e68e5898851f9b9078ee9ce29ce9bf';
+    // const { JWT_SECRET } = process.env;
     const token = authorization.replace('Bearer ', '');
     let payload;
 
