@@ -5,11 +5,13 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 // middlewares imports
 const limiter = require('./midlewares/limiter');
-const PageNotFoundHandler = require('./midlewares/PageNotFound');
 const startLogger = require('./midlewares/startLogger');
 const auth = require('./midlewares/auth');
 // controllers imports
 const { login, createUser } = require('./controllers/users');
+const { handlerSendError, handlerError } = require('./scripts/utils/errors');
+// errors
+const ObjectNotFoundError = require('./scripts/components/errors/ObjectNotFoundError');
 
 // initialize project
 require('dotenv').config();
@@ -35,8 +37,14 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-// handle wrong url
-app.use((req, res) => PageNotFoundHandler(res));
+// handler wrong url
+app.use((req, res) => {
+  throw new ObjectNotFoundError('Страница не найдена');
+});
+// handler errors
+app.use((err, req, res, next) => {
+  handlerError(err, res);
+});
 
 // start server on the port
 app.listen(PORT, () => startLogger(PORT));

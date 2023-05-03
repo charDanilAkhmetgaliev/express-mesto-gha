@@ -15,14 +15,13 @@ module.exports = (req, res, next) => {
     try {
       payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-      handlerSendError(res, new AuthorizationError('не корректный jwt'));
-      return;
+      next(new AuthorizationError('не корректный jwt'));
     }
 
     req.user = payload;
 
     next();
   } else {
-    handlerSendError(res, new AuthorizationError('jwt не найден'));
+    next(new AuthorizationError('jwt не найден'));
   }
 };

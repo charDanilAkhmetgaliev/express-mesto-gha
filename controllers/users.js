@@ -3,31 +3,31 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 // utils imports
-const { handlerSendError, handlerError } = require('../scripts/utils/errors');
 const { handlerValidation } = require('../scripts/utils/validator');
 // errors classes imports
-const DataIncorrectError = require('../scripts/components/errors/DataIncorrectError');
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
 const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
 // todo удалить
 const JWT_SECRET = '8b25b382b1a5b75ace37f19d5d26aabe35e68e5898851f9b9078ee9ce29ce9bf';
 
 // get all users controller
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => handlerError(err, res));
+    .catch(next);
 };
 // get User by ID controller
-module.exports.getUsersById = (req, res) => {
+module.exports.getUsersById = (req, res, next) => {
   const userId = req.params.id;
   User.findById(userId)
-    .orFail(() => handlerSendError(res, new IdNotFoundError(userId)))
+    .orFail(() => {
+      throw new IdNotFoundError(userId)
+    })
     .then((user) => res.send(user))
-    .catch((err) => handlerError(err, res));
+    .catch(next);
 };
 // create/register user controller
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   try {
     handlerValidation(req, res);
 
@@ -38,7 +38,7 @@ module.exports.createUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      // todo добавить SALT из окружения Number(process.env.SALT_ROUNDS)
+      // todo добавить SALT ROUNDS из окружения Number(process.env.SALT_ROUNDS)
       const hash = await bcrypt.hash(password, 10);
 
       const newUser = await User.create({
@@ -54,50 +54,49 @@ module.exports.createUser = async (req, res) => {
       throw new AuthorizationError('Пользователь с таким email уже существует');
     }
   } catch (err) {
-    handlerError(err, res);
+    next(err);
   }
 };
 // update user data controller
-module.exports.updateData = (req, res) => {
+module.exports.updateData = (req, res, next) => {
   const { name, about } = req.body;
 
-  if (name || about) {
-    User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-      .then((user) => res.send(user))
-      .catch((err) => handlerError(err, res));
-  } else {
-    handlerSendError(res, new DataIncorrectError('данные не заполнены'));
-  }
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .then((user) => res.send(user))
+    .catch(next);
 };
 // update user avatar controller
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send(user))
-    .catch((err) => handlerError(err, res));
+    .catch(next);
 };
 // login user controller
-module.exports.login = async (req, res) => {
+module.exports.login = async (req, res, next) => {
   try {
     handlerValidation(req, res);
 
     const { email, password } = req.body;
 
-    const user = await User.findUserByCredentials(email, password);
+    const user = await User.findUserByCredentials(email, password, next);
+
+    const userId = String(user._id);
+
     // todo добавить jwt-secret из окружения process.env.JWT_SECRET
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1w' });
+    const token = jwt.sign({ _id: userId }, JWT_SECRET, { expiresIn: '1w' });
 
     res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
   } catch (err) {
-    handlerError(err, res);
+    next(err);
   }
 };
 // get user data controller
-module.exports.getUserData = (req, res) => {
+module.exports.getUserData = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
       throw new IdNotFoundError(req.user._id);
     })
     .then((user) => res.send(user))
-    .catch((err) => handlerError(err, res));
+    .catch(next);
 };
