@@ -13,7 +13,6 @@ const { handlerError } = require('./scripts/utils/errors');
 // errors
 const ObjectNotFoundError = require('./scripts/components/errors/ObjectNotFoundError');
 // celebrate schemas
-const { schemaHeaderAuth } = require('./scripts/utils/clbSchemas');
 const { regExpEmail, regExpPassword, regExpLink } = require('./scripts/utils/constants');
 // initialize project
 require('dotenv').config();

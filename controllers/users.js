@@ -1,12 +1,11 @@
 // packages imports
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 // utils imports
 const { handlerValidation } = require('../scripts/utils/validator');
 // errors classes imports
 const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
-const { JWT_SECRET, SALT_ROUNDS } = require('../scripts/utils/constants');
+const { JWT_SECRET } = require('../scripts/utils/constants');
 
 // get all users controller
 module.exports.getUsers = (req, res, next) => {
@@ -29,20 +28,7 @@ module.exports.createUser = async (req, res, next) => {
   try {
     handlerValidation(req, res);
 
-    const {
-      name, about, avatar, email, password,
-    } = req.body;
-
-    // todo добавить SALT ROUNDS из окружения Number(process.env.SALT_ROUNDS)
-    const hash = await bcrypt.hash(password, SALT_ROUNDS);
-
-    const newUser = await User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    });
+    const newUser = await User.createUserByCredentials(req, next);
 
     res.send(newUser);
   } catch (err) {
@@ -71,12 +57,10 @@ module.exports.login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const user = await User.findUserByCredentials(email, password, next);
-
-    const userId = String(user._id);
+    const user = await User.findUserByCredentials(email, password);
 
     // todo добавить jwt-secret из окружения process.env.JWT_SECRET
-    const token = jwt.sign({ _id: userId }, JWT_SECRET, { expiresIn: '1w' });
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1w' });
 
     res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
   } catch (err) {
