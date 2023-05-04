@@ -29,21 +29,19 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
-cardSchema.statics.deleteCardById = function deleteCard(req, res, next) {
+cardSchema.statics.deleteCardById = function deleteCard(req) {
   return this.findById(req.params.cardId)
     .then((card) => {
       if (card) {
         if (req.user._id === card.owner.toString()) {
           return this.findByIdAndDelete(req.params.cardId)
-            .then((cardDeleted) => cardDeleted)
-            .catch(next);
+            .then((cardDeleted) => cardDeleted);
         }
         throw new RootsNotExist('Вы не являетесь владельцем данной карточки');
       } else {
         throw new IdNotFoundError(req.params.cardId);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports = mongoose.model('card', cardSchema);

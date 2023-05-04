@@ -3,17 +3,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const { errors } = require('celebrate');
+const { errors, celebrate, Joi } = require('celebrate');
 // middlewares imports
 const limiter = require('./midlewares/limiter');
-const startLogger = require('./midlewares/startLogger');
 const auth = require('./midlewares/auth');
 // controllers imports
 const { login, createUser } = require('./controllers/users');
 const { handlerError } = require('./scripts/utils/errors');
 // errors
 const ObjectNotFoundError = require('./scripts/components/errors/ObjectNotFoundError');
-
+// celebrate schemas
+const { schemaHeaderAuth } = require('./scripts/utils/clbSchemas');
+const { regExpEmail, regExpPassword, regExpLink } = require('./scripts/utils/constants');
 // initialize project
 require('dotenv').config();
 
@@ -29,9 +30,24 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// authentication
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().regex(regExpEmail).required(),
+    password: Joi.string().regex(regExpPassword).required(),
+  }),
+}), login);
+// register
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().regex(regExpLink),
+    email: Joi.string().regex(regExpEmail).required(),
+    password: Joi.string().regex(regExpPassword).required(),
+  }),
+}), createUser);
 // authorization
-app.post('/signin', login);
-app.post('/signup', createUser);
 app.use(auth);
 
 // routing
@@ -48,4 +64,8 @@ app.use(errors());
 app.use((err, req, res, next) => handlerError(err, res));
 
 // start server on the port
-app.listen(PORT, () => startLogger(PORT));
+app.listen(PORT, () => {
+  console.log('Server is working!');
+  console.log(`Listening on port: ${PORT}`);
+  console.log(`url: http://localhost:${PORT}/`);
+});
