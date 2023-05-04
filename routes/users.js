@@ -6,9 +6,13 @@ const {
   getUsers, updateData, updateAvatar, getUserData, getUsersById,
 } = require('../controllers/users');
 
-router.get('/', getUsers);
+router.get('/', celebrate({
+  headers: schemaHeaderAuth,
+}), getUsers);
 
-router.get('/me', getUserData);
+router.get('/me', celebrate({
+  headers: schemaHeaderAuth,
+}), getUserData);
 
 router.patch('/me', celebrate({
   body: Joi.object().keys({
@@ -29,6 +33,7 @@ router.get('/:id', celebrate({
   params: Joi.object().keys({
     id: Joi.string().alphanum().required(),
   }),
+  headers: schemaHeaderAuth,
 }), getUsersById);
 
 module.exports = router;

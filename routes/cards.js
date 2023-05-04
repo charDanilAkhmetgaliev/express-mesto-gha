@@ -6,7 +6,9 @@ const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
-router.get('/', getCards);
+router.get('/', celebrate({
+  headers: schemaHeaderAuth,
+}), getCards);
 
 router.post('/', celebrate({
   body: Joi.object().keys({
@@ -18,14 +20,17 @@ router.post('/', celebrate({
 
 router.delete('/:cardId', celebrate({
   params: schemaParamCardId,
+  headers: schemaHeaderAuth,
 }), deleteCard);
 
 router.put('/:cardId/likes', celebrate({
   params: schemaParamCardId,
+  headers: schemaHeaderAuth,
 }), likeCard);
 
 router.delete('/:cardId/likes', celebrate({
   params: schemaParamCardId,
+  headers: schemaHeaderAuth,
 }), dislikeCard);
 
 module.exports = router;
