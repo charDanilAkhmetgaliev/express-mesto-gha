@@ -1,6 +1,4 @@
-const HttpError = require('./HttpError');
-
-class RootsNotExist extends HttpError {
+class RootsNotExist extends Error {
   constructor(message = 'Нет прав доступа') {
     super();
     this.name = 'ROOT_ERROR';

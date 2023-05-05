@@ -1,6 +1,4 @@
-const HttpError = require('./HttpError');
-
-class ObjectNotFoundError extends HttpError {
+class ObjectNotFoundError extends Error {
   constructor(message = 'Запрашиваемый объект не найден') {
     super();
     this.name = 'OBJECT_ERROR';

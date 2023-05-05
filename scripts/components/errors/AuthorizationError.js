@@ -1,10 +1,9 @@
-const HttpError = require('./HttpError');
+const ValidationError = require('./ValidationError');
 
-class AuthorizationError extends HttpError {
+class AuthorizationError extends ValidationError {
   constructor(message = 'Логин или пароль не верный') {
     super();
     this.name = 'AUTH_ERROR';
-    this.statusCode = 401;
     this.message = message;
   }
 }

@@ -1,6 +1,4 @@
-const HttpError = require('./HttpError');
-
-class DataIncorrectError extends HttpError {
+class DataIncorrectError extends Error {
   constructor(message = 'Переданы некорректные данные') {
     super();
     this.name = 'DATA_ERROR';
