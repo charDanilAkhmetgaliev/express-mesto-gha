@@ -3,12 +3,12 @@ const AuthorizationError = require('../scripts/components/errors/AuthorizationEr
 const { JWT_SECRET } = require('../scripts/utils/constants');
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
+  const { cookie } = req.headers;
 
-  if (authorization && authorization.startsWith('Bearer ')) {
+  if (cookie && cookie.startsWith('jwt=')) {
     // todo взять из окружения
     // const { JWT_SECRET } = process.env;
-    const token = authorization.replace('Bearer ', '');
+    const token = cookie.replace('jwt=', '');
     let payload;
 
     try {

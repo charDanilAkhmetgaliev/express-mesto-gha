@@ -1,8 +1,8 @@
 const { Joi } = require('celebrate');
-const { regExpAuth } = require('./constants');
+const { regExpJwt } = require('./constants');
 
 const schemaHeaderAuth = Joi.object().keys({
-  authorization: Joi.string().regex(regExpAuth).required(),
+  cookie: Joi.string().regex(regExpJwt).required(),
 }).unknown(true);
 
 const schemaParamCardId = Joi.object().keys({
