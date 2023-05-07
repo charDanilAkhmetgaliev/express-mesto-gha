@@ -1,9 +1,8 @@
 class ValidationError extends Error {
-  constructor() {
-    super();
+  constructor(message = 'Данные не прошли валидацию') {
+    super(message);
     this.name = 'ValidationError';
     this.statusCode = 401;
-    this.message = 'Данные не прошли валидацию';
   }
 }
 

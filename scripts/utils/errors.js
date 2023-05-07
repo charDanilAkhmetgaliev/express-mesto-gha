@@ -1,6 +1,5 @@
 const CastError = require('../components/errors/CastError');
 const ValidationError = require('../components/errors/ValidationError');
-const HttpError = require('../components/errors/HttpError');
 const DuplicateError = require('../components/errors/DuplicateError');
 
 const handlerSendError = (res, err) => {
@@ -21,7 +20,6 @@ const handlerError = (err, res) => {
         handlerSendError(res, new CastError(err.message));
         break;
       default:
-        handlerSendError(res, new HttpError());
     }
   }
 };

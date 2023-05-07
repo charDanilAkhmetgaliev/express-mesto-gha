@@ -1,9 +1,9 @@
 // packages imports
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const { errors, celebrate, Joi } = require('celebrate');
+const { errors, celebrate } = require('celebrate');
+const cookieParser = require('cookie-parser');
 // middlewares imports
 const limiter = require('./midlewares/limiter');
 const auth = require('./midlewares/auth');
@@ -13,7 +13,8 @@ const { handlerError } = require('./scripts/utils/errors');
 // errors
 const ObjectNotFoundError = require('./scripts/components/errors/ObjectNotFoundError');
 // celebrate schemas
-const { regExpEmail, regExpPassword, regExpLink } = require('./scripts/utils/constants');
+const { schemaBodySignUp, schemaBodySignIn } = require('./scripts/utils/clbSchemas');
+const { JWT_SECRET } = require('./scripts/utils/constants');
 // initialize project
 require('dotenv').config();
 
@@ -26,25 +27,17 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 // protect and parse
 app.use(limiter);
 app.use(helmet());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(JWT_SECRET));
 
 // authentication
 app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().regex(regExpEmail).required(),
-    password: Joi.string().regex(regExpPassword).required(),
-  }),
+  body: schemaBodySignIn,
 }), login);
 // register
 app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(regExpLink),
-    email: Joi.string().regex(regExpEmail).required(),
-    password: Joi.string().regex(regExpPassword).required(),
-  }),
+  body: schemaBodySignUp,
 }), createUser);
 // authorization
 app.use(auth);
@@ -54,13 +47,11 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 // handler wrong url
-app.use(() => {
-  throw new ObjectNotFoundError('Страница не найдена');
-});
+app.use((req, res) => handlerError(new ObjectNotFoundError('Страница не найдена'), res));
 // handler celebrate errors
 app.use(errors());
 // handler errors
-app.use((err, req, res, next) => handlerError(err, res));
+app.use((err, req, res, next) => handlerError(err, res, next));
 
 // start server on the port
 app.listen(PORT, () => {

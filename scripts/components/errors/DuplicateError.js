@@ -1,9 +1,8 @@
 class DuplicateError extends Error {
-  constructor() {
-    super();
+  constructor(message = 'Данный объект уже существует') {
+    super(message);
     this.name = 'DUPLICATE_ERROR';
     this.statusCode = 409;
-    this.message = 'Данный объект уже существует';
   }
 }
 

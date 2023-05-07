@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    validator: URL,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   email: {
@@ -48,10 +49,9 @@ userSchema.statics.findUserByCredentials = function findUser(email, password) {
     });
 };
 
-userSchema.statics.createUserByCredentials = function createUser(req) {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+userSchema.statics.createUserByCredentials = function createUser({
+  name, about, avatar, email, password,
+}) {
   // todo взять salt из окружения
   return bcrypt.hash(password, SALT_ROUNDS)
     .then((hash) => this.create({

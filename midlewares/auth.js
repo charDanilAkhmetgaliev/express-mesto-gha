@@ -3,18 +3,18 @@ const AuthorizationError = require('../scripts/components/errors/AuthorizationEr
 const { JWT_SECRET } = require('../scripts/utils/constants');
 
 module.exports = (req, res, next) => {
-  const { cookie } = req.headers;
+  const token = req.cookies.jwt;
 
-  if (cookie && cookie.startsWith('jwt=')) {
+  if (token) {
     // todo взять из окружения
     // const { JWT_SECRET } = process.env;
-    const token = cookie.replace('jwt=', '');
     let payload;
 
     try {
       payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
       next(new AuthorizationError('не корректный jwt'));
+      return;
     }
 
     req.user = payload;

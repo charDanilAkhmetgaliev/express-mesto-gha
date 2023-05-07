@@ -1,9 +1,8 @@
 class RootsNotExist extends Error {
-  constructor(message = 'Нет прав доступа') {
-    super();
+  constructor(message = 'У вас нет прав доступа') {
+    super(message);
     this.name = 'ROOT_ERROR';
     this.statusCode = 403;
-    this.message = message;
   }
 }
 
