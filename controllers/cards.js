@@ -22,7 +22,7 @@ module.exports.deleteCard = (req, res, next) => {
   const userId = req.user._id;
 
   Card.deleteCardById(cardId, userId)
-    .then(() => res.send({ message: 'Карточка успешно удалена'}))
+    .then(() => res.send({ message: 'Карточка успешно удалена' }))
     .catch(next);
 };
 

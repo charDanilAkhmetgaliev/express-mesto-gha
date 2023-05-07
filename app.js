@@ -54,8 +54,4 @@ app.use(errors());
 app.use((err, req, res, next) => handlerError(err, res, next));
 
 // start server on the port
-app.listen(PORT, () => {
-  console.log('Server is working!');
-  console.log(`Listening on port: ${PORT}`);
-  console.log(`url: http://localhost:${PORT}/`);
-});
+app.listen(PORT);
