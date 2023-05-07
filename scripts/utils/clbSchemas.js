@@ -8,13 +8,13 @@ const schemaParamCardId = validateSchema({
 });
 
 const schemaBodyCards = validateSchema({
-  name: Joi.string().min(2).max(30).required(),
+  name: Joi.string().min(2).max(29).required(),
   link: Joi.string().regex(REG_EXP_LINK).required(),
 });
 
 const schemaBodyUser = validateSchema({
-  name: Joi.string().min(2).max(30).required(),
-  about: Joi.string().min(2).max(30).required(),
+  name: Joi.string().min(2).max(29).required(),
+  about: Joi.string().min(2).max(29).required(),
 });
 
 const schemaBodyAvatar = validateSchema({
@@ -26,8 +26,8 @@ const schemaParamUserId = validateSchema({
 });
 
 const schemaBodySignUp = validateSchema({
-  name: Joi.string().min(2).max(30),
-  about: Joi.string().min(2).max(30),
+  name: Joi.string().min(2).max(29),
+  about: Joi.string().min(2).max(29),
   avatar: Joi.string().regex(REG_EXP_LINK),
   email: Joi.string().regex(REG_EXP_EMAIL).required(),
   password: Joi.string().regex(REG_EXP_PASSWORD).required(),
