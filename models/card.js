@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const RootsNotExist = require('../scripts/components/errors/RootsNotExist');
-const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
+const ObjectNotFoundError = require('../scripts/components/errors/ObjectNotFoundError');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,6 +11,7 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
+    validator: URL,
     required: true,
   },
   owner: {
@@ -29,17 +30,17 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
-cardSchema.statics.deleteCardById = function deleteCard(req) {
-  return this.findById(req.params.cardId)
+cardSchema.statics.deleteCardById = function deleteCard(cardId, userId) {
+  return this.findById(cardId)
     .then((card) => {
       if (card) {
-        if (req.user._id === card.owner.toString()) {
-          return this.findByIdAndDelete(req.params.cardId)
+        if (userId === card.owner.toString()) {
+          return this.deleteOne(card)
             .then((cardDeleted) => cardDeleted);
         }
         throw new RootsNotExist('Вы не являетесь владельцем данной карточки');
       } else {
-        throw new IdNotFoundError(req.params.cardId);
+        throw new ObjectNotFoundError(`Карточка с id: ${cardId} не найдена`);
       }
     });
 };

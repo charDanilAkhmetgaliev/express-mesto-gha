@@ -4,7 +4,7 @@ const User = require('../models/user');
 // utils imports
 const { handlerValidation } = require('../scripts/utils/validator');
 // errors classes imports
-const IdNotFoundError = require('../scripts/components/errors/IdNotFoundError');
+const ObjectNotFoundError = require('../scripts/components/errors/ObjectNotFoundError');
 const { JWT_SECRET } = require('../scripts/utils/constants');
 
 // get all users controller
@@ -18,7 +18,7 @@ module.exports.getUsersById = (req, res, next) => {
   const userId = req.params.id;
   User.findById(userId)
     .orFail(() => {
-      throw new IdNotFoundError(userId);
+      throw new ObjectNotFoundError(`Пользователь с id: ${userId} не найден`);
     })
     .then((user) => res.send(user))
     .catch(next);
@@ -28,7 +28,7 @@ module.exports.createUser = async (req, res, next) => {
   try {
     handlerValidation(req, res);
 
-    const newUser = await User.createUserByCredentials(req, next);
+    const newUser = await User.createUserByCredentials(req.body);
 
     res.send(newUser);
   } catch (err) {
@@ -59,10 +59,17 @@ module.exports.login = async (req, res, next) => {
 
     const user = await User.findUserByCredentials(email, password);
 
-    // todo добавить jwt-secret из окружения process.env.JWT_SECRET
+    // todo добавить jwt из окружения process.env.JWT_SECRET
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1w' });
 
-    res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send(user);
+    res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true })
+      .send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
   } catch (err) {
     next(err);
   }
@@ -71,7 +78,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.getUserData = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw new IdNotFoundError(req.user._id);
+      throw new ObjectNotFoundError(`Пользователь с id: ${req.user._id} не найден`);
     })
     .then((user) => res.send(user))
     .catch(next);
