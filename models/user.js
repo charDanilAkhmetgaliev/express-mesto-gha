@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
+const ValidationError = require('../scripts/components/errors/ValidationError');
 const { SALT_ROUNDS } = require('../scripts/utils/constants');
 
 const userSchema = new mongoose.Schema({
@@ -42,10 +42,10 @@ userSchema.statics.findUserByCredentials = function findUser(email, password) {
             if (matched) {
               return user;
             }
-            throw new AuthorizationError();
+            throw new ValidationError('Логин или пароль не верный');
           });
       }
-      throw new AuthorizationError();
+      throw new ValidationError('Логин или пароль не верный');
     });
 };
 

@@ -47,7 +47,9 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 // handler wrong url
-app.use((req, res) => handlerError(new ObjectNotFoundError('Страница не найдена'), res));
+app.use((req, res, next) => {
+  next(new ObjectNotFoundError('Страница не найдена'));
+});
 // handler celebrate errors
 app.use(errors());
 // handler errors

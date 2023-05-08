@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const AuthorizationError = require('../scripts/components/errors/AuthorizationError');
+const ValidationError = require('../scripts/components/errors/ValidationError');
 const { JWT_SECRET } = require('../scripts/utils/constants');
 
 module.exports = (req, res, next) => {
@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
     try {
       payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-      next(new AuthorizationError('не корректный jwt'));
+      next(new ValidationError('не корректный jwt'));
       return;
     }
 
@@ -21,6 +21,6 @@ module.exports = (req, res, next) => {
 
     next();
   } else {
-    next(new AuthorizationError('jwt не найден'));
+    next(new ValidationError('jwt не найден'));
   }
 };
