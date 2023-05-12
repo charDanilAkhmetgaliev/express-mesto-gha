@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 // middlewares imports
 const limiter = require('./midlewares/limiter');
 const auth = require('./midlewares/auth');
+const { errorLogger, requestLogger } = require('./midlewares/logger');
 // controllers imports
 const { login, createUser } = require('./controllers/users');
 const { handlerError } = require('./scripts/utils/errors');
@@ -22,7 +23,7 @@ const app = express();
 const { PORT = 3000 } = process.env;
 
 // mongoDB server connecting
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 // protect and parse
 app.use(limiter);
@@ -31,14 +32,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(JWT_SECRET));
 
+// logger req
+app.use(requestLogger);
+
 // authentication
 app.post('/signin', celebrate({
   body: schemaBodySignIn,
 }), login);
+
 // register
 app.post('/signup', celebrate({
   body: schemaBodySignUp,
 }), createUser);
+
 // authorization
 app.use(auth);
 
@@ -50,10 +56,16 @@ app.use('/cards', require('./routes/cards'));
 app.use((req, res, next) => {
   next(new ObjectNotFoundError('Страница не найдена'));
 });
+
+// logger err
+app.use(errorLogger);
+
 // handler celebrate errors
 app.use(errors());
 // handler errors
 app.use((err, req, res, next) => handlerError(err, res, next));
 
 // start server on the port
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log('Server working...');
+});
